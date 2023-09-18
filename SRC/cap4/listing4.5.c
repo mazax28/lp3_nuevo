@@ -1,17 +1,17 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <time.h>
-#include <unistd.h> // Include this header for usleep
+#include <unistd.h> // Librería para usleep
 
 void* thread_function(void* thread_arg)
 {
     int i;
     for (i = 0; i < 5; i++) {
-        printf("Detached Thread: Doing some work... (Iteration %d)\n", i);
-        // Simulate some work
-        usleep(1000000); // Sleep for 1 second
+        printf("Hilo Desvinculado: Realizando un trabajo... (Iteración %d)\n", i);
+        // Simular un trabajo
+        usleep(1000000); // Dormir durante 1 segundo
     }
-    printf("Detached Thread: Work complete.\n");
+    printf("Hilo Desvinculado: Trabajo completo.\n");
     return NULL;
 }
 
@@ -24,17 +24,17 @@ int main()
     pthread_create(&thread, &attr, &thread_function, NULL);
     pthread_attr_destroy(&attr);
 
-    // Do some work in the main thread
+    // Realizar un trabajo en el hilo principal
     int j;
-    for (j = 0; j < 3; j++) {
-        printf("Main Thread: Doing some work... (Iteration %d)\n", j);
-        // Simulate some work
-        usleep(500000); // Sleep for 0.5 seconds
+    for (j = 0; j < 5; j++) {
+        printf("Hilo Principal: Realizando un trabajo... (Iteración %d)\n", j);
+        // Simular un trabajo
+        usleep(500000); // Dormir durante 0.5 segundos
     }
-    printf("Main Thread: Work complete.\n");
+    printf("Hilo Principal: Trabajo completo.\n");
 
-    // The main thread does not need to join the detached thread,
-    // as it runs independently and will clean up itself.
+    // El hilo principal no necesita unirse al hilo desvinculado,
+    // ya que se ejecuta de forma independiente y se limpiará por sí mismo.
 
     return 0;
 }
