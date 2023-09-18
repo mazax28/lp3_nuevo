@@ -5,54 +5,50 @@
 struct job {
     /* Link field for linked list. */
     struct job* next;
-    /* Description of the job. */
-    char* description;
-    /* Other fields describing work to be done... */
+    /* Descripción del trabajo. */
+    char* descripcion;
 };
 
-/* A linked list of pending jobs. */
-struct job* job_queue = NULL; // Initialize job_queue to be empty
+/* Una lista enlazada de trabajos pendientes. */
+struct job* job_queue = NULL; // Inicializar cola_trabajos como vacía
 
-/* Mutex to protect the job_queue. */
+/* Mutex para proteger la cola_trabajos. */
 pthread_mutex_t job_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-/* Process a job. This function should be implemented according to your requirements. */
+/* Procesar un trabajo. Esta función debe implementarse según sus requisitos. */
 void process_job(struct job* job)
 {
-    /* Implement the logic to process the job here. */
-    printf("Processing job...\n");
-    // Example: Print the job description
-    printf("Job Description: %s\n", job->description);
-    // You can add your specific processing logic here.
+    printf("Procesando trabajo...\n");
+    printf("Descripcion de trabajo: %s\n", job->descripcion);
 }
 
-/* Thread function to process jobs. */
+/* Función de hilo para procesar trabajos. */
 void* thread_function(void* arg)
 {
     while (1) {
         struct job* next_job = NULL;
 
-        /* Lock the mutex to access the job_queue safely. */
+        /* Bloquear el mutex para acceder a la cola_trabajos de manera segura. */
         pthread_mutex_lock(&job_queue_mutex);
 
         if (job_queue != NULL) {
-            /* Get the next available job. */
+            /* Obtener el próximo trabajo disponible. */
             next_job = job_queue;
-            /* Remove this job from the list. */
+            /* Eliminar este trabajo de la lista. */
             job_queue = job_queue->next;
         }
 
-        /* Unlock the mutex to allow other threads to access the queue. */
+        /* Desbloquear el mutex para permitir que otros hilos accedan a la cola. */
         pthread_mutex_unlock(&job_queue_mutex);
 
         if (next_job != NULL) {
-            /* Carry out the work. */
+            /* Realizar el trabajo. */
             process_job(next_job);
-            /* Clean up. */
-            free(next_job->description); // Free the description
+            /* Limpiar. */
+            free(next_job->descripcion); // Liberar la descripción
             free(next_job);
         } else {
-            /* No jobs left in the queue, exit the thread. */
+            /* No quedan trabajos en la cola, salir del hilo. */
             break;
         }
     }
@@ -62,27 +58,27 @@ void* thread_function(void* arg)
 
 int main()
 {
-    pthread_t threads[2]; // Create two threads for this example
+    pthread_t threads[2]; // Crear dos hilos para este ejemplo
 
-    // Add 10 jobs to the job queue, protected by mutex
+    // Agregar 10 trabajos a la cola de trabajos
     for (int i = 0; i < 10; i++) {
         struct job* new_job = (struct job*)malloc(sizeof(struct job));
-        new_job->description = (char*)malloc(20); // Allocate memory for the description
-        snprintf(new_job->description, 20, "Job %d", i + 1);
+        new_job->descripcion = (char*)malloc(20); // Reservar memoria para la descripcion
+        snprintf(new_job->descripcion, 20, "Trabajo %d", i + 1);
         new_job->next = NULL;
 
-        // Lock the mutex to access the job_queue safely.
+        // Bloquea el mutex para acceder a job_queue de forma segura.
         pthread_mutex_lock(&job_queue_mutex);
 
-        // Enqueue the job
+        // Poner en cola el trabajo
         new_job->next = job_queue;
         job_queue = new_job;
 
-        // Unlock the mutex to allow other threads to access the queue.
+        // Desbloquea el mutex para permitir que otros subprocesos accedan a la cola.
         pthread_mutex_unlock(&job_queue_mutex);
     }
 
-    // Create threads to process jobs
+    // Crear hilos para procesar trabajos
     for (int i = 0; i < 2; i++) {
         if (pthread_create(&threads[i], NULL, thread_function, NULL) != 0) {
             perror("pthread_create");
@@ -90,7 +86,7 @@ int main()
         }
     }
 
-    // Wait for threads to finish
+    // Esperar a que los hilos terminen
     for (int i = 0; i < 2; i++) {
         if (pthread_join(threads[i], NULL) != 0) {
             perror("pthread_join");

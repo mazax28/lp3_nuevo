@@ -5,89 +5,89 @@
 class ThreadExitException
 {
 public:
-    /* Create an exception-signaling thread exit with RETURN_VALUE. */
-    ThreadExitException(void* return_value)
-        : thread_return_value_(return_value)
+    /* Crea una excepción que señala la salida del hilo con VALOR_DE_RETORNO. */
+    ThreadExitException(void* valor_de_retorno)
+        : valor_de_retorno_del_hilo_(valor_de_retorno)
     {
     }
 
-    /* Actually exit the thread, using the return value provided in the constructor. */
-    void* DoThreadExit()
+    /* Realmente sale del hilo usando el valor de retorno proporcionado en el constructor. */
+    void* RealizarSalidaDelHilo()
     {
-        pthread_exit(thread_return_value_);
+        pthread_exit(valor_de_retorno_del_hilo_);
     }
 
 private:
-    /* The return value that will be used when exiting the thread. */
-    void* thread_return_value_;
+    /* El valor de retorno que se usará al salir del hilo. */
+    void* valor_de_retorno_del_hilo_;
 };
 
-bool should_exit_thread_immediately()
+bool deberia_salir_del_hilo_inmediatamente()
 {
-    // Simulate a condition where the thread should exit immediately.
+    // Simula una condición en la que el hilo debería salir inmediatamente.
     return false;
 }
 
-void do_some_work()
+void realizar_algun_trabajo()
 {
     int array[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
     for (int i = 0; i < 10; i++)
     {
-        /* Do some useful work here, such as processing elements of the array. */
-        std::cout << "Thread: Processing element " << array[i] << std::endl;
+        /* Realiza algún trabajo útil aquí, como procesar elementos del arreglo. */
+        std::cout << "Hilo: Procesando elemento " << array[i] << std::endl;
 
-        // Check if the thread should exit
-        if (should_exit_thread_immediately())
+        // Comprueba si el hilo debería salir
+        if (deberia_salir_del_hilo_inmediatamente())
         {
-            throw ThreadExitException(/* thread's return value = */ NULL);
+            throw ThreadExitException(/* valor de retorno del hilo = */ NULL);
         }
     }
 }
 
-void* thread_function(void*)
+void* funcion_del_hilo(void*)
 {
     try
     {
-        do_some_work();
+        realizar_algun_trabajo();
     }
     catch (ThreadExitException ex)
     {
-        /* Some function indicated that we should exit the thread. */
-        ex.DoThreadExit();
+        /* Alguna función indicó que deberíamos salir del hilo. */
+        ex.RealizarSalidaDelHilo();
     }
     return NULL;
 }
 
 int main()
 {
-    pthread_t thread;
+    pthread_t hilo;
 
-    /* Create a thread to do some work. */
-    if (pthread_create(&thread, NULL, thread_function, NULL) != 0)
+    /* Crea un hilo para realizar algún trabajo. */
+    if (pthread_create(&hilo, NULL, funcion_del_hilo, NULL) != 0)
     {
         perror("pthread_create");
         return 1;
     }
 
-    /* Let the thread run for a while. */
+    /* Deja que el hilo se ejecute durante un tiempo. */
     sleep(2);
 
-    /* Cancel the thread. */
-    if (pthread_cancel(thread) != 0)
+    /* Cancela el hilo. */
+    if (pthread_cancel(hilo) != 0)
     {
         perror("pthread_cancel");
         return 1;
     }
 
-    /* Wait for the thread to finish. */
-    if (pthread_join(thread, NULL) != 0)
+    /* Espera a que el hilo termine. */
+    if (pthread_join(hilo, NULL) != 0)
     {
         perror("pthread_join");
         return 1;
     }
 
-    std::cout << "Main: Thread has finished or has been canceled." << std::endl;
+    std::cout << "Principal: El hilo ha terminado o ha sido cancelado." << std::endl;
 
     return 0;
 }
