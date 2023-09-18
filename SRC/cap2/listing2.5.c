@@ -2,6 +2,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+/*
+   este programa crea un archivo temporal, escribe datos en él,
+   luego lee y muestra esos datos desde el archivo temporal
+   antes de limpiar la memoria y finalizar.
+*/
+
+
+
+
 /* A handle for a temporary file created with write_temp_file. In
    this implementation, it's just a file descriptor. */
 typedef int temp_file_handle;
@@ -13,10 +22,13 @@ temp_file_handle write_temp_file(char* buffer, size_t length)
 {
     /* Create the filename and file. The XXXXXX will be replaced with
        characters that make the filename unique. */
+
     char temp_filename[] = "/tmp/temp_file.XXXXXX";
     int fd = mkstemp(temp_filename);
+
     /* Unlink the file immediately, so that it will be removed when the
        file descriptor is closed. */
+
     unlink(temp_filename);
     /* Write the number of bytes to the file first. */
     write(fd, &length, sizeof(length));
@@ -33,6 +45,7 @@ temp_file_handle write_temp_file(char* buffer, size_t length)
    those contents, which the caller must deallocate with free.
    *LENGTH is set to the size of the contents, in bytes. The
    temporary file is removed. */
+   
 char* read_temp_file(temp_file_handle temp_file, size_t* length)
 {
     char* buffer;

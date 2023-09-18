@@ -3,6 +3,19 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+
+/*
+este programa permite leer datos desde un archivo y mostrarlos en la consola.
+Si ocurre algún error en la lectura o en la asignación de memoria,
+se manejan adecuadamente, y se imprime un mensaje de error.
+
+*/
+
+
+
+
+
+
 // Función para leer datos desde un archivo y almacenarlos en un búfer.
 char* read_from_file(const char* filename, size_t length) {
     char* buffer = NULL;
