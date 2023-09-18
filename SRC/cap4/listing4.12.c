@@ -12,7 +12,7 @@ typedef struct job {
 
 // imprimir el id del trabajo y despues dormir entre 2 y 4 segundos
 void process_job(int id_hilo, int id_trabajo) {
-  printf("HILO %d, trabajo %d\n", id_hilo, id_trabajo);
+  printf("Thread %d, work %d\n", id_hilo, id_trabajo);
   int random_number = 6 + rand() % (6 - 5 + 1);
   sleep(random_number);
   return;
@@ -85,7 +85,7 @@ void *enqueue_job(void *_) {
 
 // listing 4.12: Semaphore
 int main(int argc, char *argv[]) {
-  printf("\nUna fabrica anade trabajos cada 1 segundo para demostrar el uso de semaforos.\n");
+  printf("\nAdds jobs every 1 second to demonstrate the use of traffic lights.\n");
   sleep(2);
   // inicializar la cola
   initialize_job_queue();
